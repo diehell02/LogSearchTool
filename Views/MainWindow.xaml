@@ -1,0 +1,73 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:LogSearchTool.ViewModels;assembly=LogSearchTool"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="LogSearchTool.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="LogSearchTool">
+
+  <Design.DataContext>
+    <vm:MainWindowViewModel/>
+  </Design.DataContext>
+
+  <Window.Styles>
+    <Style Selector="TextBlock.GridItem">
+      <Setter Property="Margin" Value="2"></Setter>
+    </Style>
+    <Style Selector="TextBox.GridItem">
+      <Setter Property="Margin" Value="2"></Setter>
+    </Style>
+    <Style Selector="Button.GridItem">
+      <Setter Property="Margin" Value="2"></Setter>
+    </Style>
+    <Style Selector="Grid.GridItem">
+      <Setter Property="Margin" Value="2"></Setter>
+    </Style>
+  </Window.Styles>
+
+  <Grid Margin="25">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="30"></RowDefinition>
+      <RowDefinition Height="30"></RowDefinition>
+      <RowDefinition Height="*"></RowDefinition>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"></ColumnDefinition>
+      <ColumnDefinition Width="*"></ColumnDefinition>
+      <ColumnDefinition Width="*"></ColumnDefinition>
+      <ColumnDefinition Width="*"></ColumnDefinition>
+    </Grid.ColumnDefinitions>
+
+    <Grid></Grid>
+    <TextBlock Grid.Row="0" Grid.Column="0"
+               Classes="GridItem"
+               Text="LogFile"></TextBlock>
+    <TextBox Grid.Row="0" Grid.Column="1"
+              Classes="GridItem"
+             Text="{Binding LogFilePath}"></TextBox>
+    <Button Grid.Row="0" Grid.Column="2"
+            Classes="GridItem"
+            Content="Import" Click="ImportButtonClick"></Button>
+    <Button Grid.Row="0" Grid.Column="4"
+            Classes="GridItem"
+            Content="Extra" Click="ExtraButtonClick"></Button>
+
+    <TextBlock Grid.Row="1" Grid.Column="0"
+               Classes="GridItem"
+               Text="Search"></TextBlock>
+    <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+              Classes="GridItem"
+             Text="{Binding SearchText}"></TextBox>
+    <Button Grid.Row="1" Grid.Column="3"
+            Classes="GridItem"
+            Content="Search" Command="{Binding SearchButtonClick}"></Button>
+
+    <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+             Classes="GridItem"
+             Text="{Binding SearchResultText}"></TextBox>
+
+  </Grid>
+
+</Window>
