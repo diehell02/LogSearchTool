@@ -15,6 +15,7 @@
   <Window.Styles>
     <Style Selector="TextBlock.GridItem">
       <Setter Property="Margin" Value="2"></Setter>
+      <Setter Property="VerticalAlignment" Value="Center"></Setter>
     </Style>
     <Style Selector="TextBox.GridItem">
       <Setter Property="Margin" Value="2"></Setter>
@@ -31,6 +32,7 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="30"></RowDefinition>
       <RowDefinition Height="30"></RowDefinition>
+      <RowDefinition Height="30"></RowDefinition>
       <RowDefinition Height="*"></RowDefinition>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
@@ -40,7 +42,6 @@
       <ColumnDefinition Width="*"></ColumnDefinition>
     </Grid.ColumnDefinitions>
 
-    <Grid></Grid>
     <TextBlock Grid.Row="0" Grid.Column="0"
                Classes="GridItem"
                Text="LogFile"></TextBlock>
@@ -64,7 +65,20 @@
             Classes="GridItem"
             Content="Search" Command="{Binding SearchButtonClick}"></Button>
 
-    <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+    <TextBlock Grid.Row="2" Grid.Column="0"
+               Classes="GridItem"
+               Text="Files to include"></TextBlock>
+    <TextBox Grid.Row="2" Grid.Column="1"
+              Classes="GridItem"
+             Text="{Binding FilesToInclude}"></TextBox>
+    <TextBlock Grid.Row="2" Grid.Column="2"
+               Classes="GridItem"
+               Text="Files to exclude"></TextBlock>
+    <TextBox Grid.Row="2" Grid.Column="3"
+              Classes="GridItem"
+             Text="{Binding FilesToExclude}"></TextBox>
+
+    <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
              Classes="GridItem"
              Text="{Binding SearchResultText}"></TextBox>
 

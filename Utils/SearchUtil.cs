@@ -10,24 +10,46 @@ namespace LogSearchTool.Utils
 {
     class SearchUtil
     {
-        public static void SearchKeyWord(string keyWord, DirectoryInfo directoryInfo, Action<string> callback)
+        public static void SearchKeyWord(string keyWord, DirectoryInfo directoryInfo, List<string> filesToInclude, 
+            List<string> filesToExclude, Action<string> callback)
         {
             Task.Factory.StartNew(() =>
             {
-                Search(keyWord, directoryInfo, callback);
+                Search(keyWord, directoryInfo, filesToInclude, filesToExclude, callback);
             });
         }
 
-        private static void Search(string keyWord, DirectoryInfo directoryInfo, Action<string> callback)
+        private static void Search(string keyWord, DirectoryInfo directoryInfo, List<string> filesToInclude, 
+            List<string> filesToExclude, Action<string> callback)
         {
             directoryInfo?.EnumerateFiles().ToList().ForEach(fileInfo =>
             {
+                bool ignore = false;
+
+                foreach (var fileExtension in filesToInclude) {
+                    if (fileInfo.Extension != fileExtension) {
+                        ignore = true;
+                        break;
+                    }
+                }
+
+                foreach (var fileExtension in filesToExclude) {
+                    if (fileInfo.Extension == fileExtension) {
+                        ignore = true;
+                        break;
+                    }
+                }
+
+                if (ignore) {
+                    return;
+                }
+
                 using (StreamReader sr = fileInfo?.OpenText())
                 {
                     string s = "";
                     while (!string.IsNullOrEmpty(s = sr.ReadLine()))
                     {
-                        if(s.Contains(keyWord))
+                        if(s.Contains(keyWord, StringComparison.InvariantCultureIgnoreCase))
                         {
                             callback?.Invoke(s);
                         }
@@ -37,7 +59,7 @@ namespace LogSearchTool.Utils
 
             directoryInfo?.EnumerateDirectories().ToList().ForEach(directoryInfo =>
             {
-                Search(keyWord, directoryInfo, callback);
+                Search(keyWord, directoryInfo, filesToInclude, filesToExclude, callback);
             });
         }
     }
