@@ -1,19 +1,24 @@
-﻿using Avalonia.Controls;
+﻿using System.Reflection;
+using System.Threading.Tasks;
+using Avalonia.Controls;
 using LogSearchTool.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.IO;
+using Avalonia.Collections;
 
 namespace LogSearchTool.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase, INotifyPropertyChanged
     {
-        private StringBuilder searchResultStringBuilder = new StringBuilder();
-
-        private List<string> filesToIncludeList {
-            get {
-                if (string.IsNullOrEmpty(FilesToInclude)) {
+        private List<string> filesToIncludeList
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(FilesToInclude))
+                {
                     return new List<string>();
                 }
 
@@ -21,9 +26,12 @@ namespace LogSearchTool.ViewModels
             }
         }
 
-        private List<string> filesToExcludeList {
-            get {
-                if (string.IsNullOrEmpty(FilesToExclude)) {
+        private List<string> filesToExcludeList
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(FilesToExclude))
+                {
                     return new List<string>();
                 }
 
@@ -32,8 +40,11 @@ namespace LogSearchTool.ViewModels
         }
 
         private string logFilePath;
-        public string LogFilePath { 
-            get => logFilePath; 
+        private AvaloniaList<StringBuilder> searchResultText;
+
+        public string LogFilePath
+        {
+            get => logFilePath;
             set
             {
                 logFilePath = value;
@@ -43,43 +54,60 @@ namespace LogSearchTool.ViewModels
 
         public string SearchText { get; set; } = string.Empty;
 
-        public string SearchResultText
+        public AvaloniaList<StringBuilder> SearchResultText
         {
-            get => searchResultStringBuilder.ToString();
+            get => searchResultText;
+            private set
+            {
+                searchResultText = value;
+                OnPropertyChanged(nameof(SearchResultText));
+            }
         }
 
-        public string FilesToInclude 
+        public string FilesToInclude
         {
             get;
             set;
         }
 
-        public string FilesToExclude 
+        public string FilesToExclude
         {
             get;
             set;
         }
 
-        public MainWindowViewModel() {
+        public MainWindowViewModel()
+        {
             FilesToInclude = ".log";
+            searchResultText = new AvaloniaList<StringBuilder>();
         }
 
-        public void SearchButtonClick()
+        public async void SearchButtonClick()
         {
-            if (string.IsNullOrEmpty(SearchText)) 
+            if (string.IsNullOrEmpty(SearchText))
             {
                 return;
             }
 
-            searchResultStringBuilder = new StringBuilder();
-            OnPropertyChanged(nameof(SearchResultText));
+            SearchResultText.Clear();
 
-            SearchUtil.SearchKeyWord(SearchText, new System.IO.DirectoryInfo(LogFilePath),
-                filesToIncludeList, filesToExcludeList, (result) =>
-            {
-                searchResultStringBuilder.AppendLine(result);
-                OnPropertyChanged(nameof(SearchResultText));
-            });
+            await SearchUtil.SearchKeyWord(SearchText, new DirectoryInfo(LogFilePath),
+                filesToIncludeList, filesToExcludeList, results =>
+                {
+                    Console.WriteLine($"{DateTime.Now} search result return");
+                    foreach (var result in results)
+                    {
+                        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            SearchResultText.Add(new StringBuilder(result.FileInfo.Name));
+                            SearchResultText.Add(new StringBuilder("----------------------------------------------------------"));
+
+                            SearchResultText.AddRange(result.Content);
+                        });
+                    }
+
+                    Console.WriteLine($"{DateTime.Now} search result finish");
+                });
         }
     }
 }

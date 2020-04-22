@@ -78,10 +78,22 @@
               Classes="GridItem"
              Text="{Binding FilesToExclude}"></TextBox>
 
-    <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
-             Classes="GridItem"
-             Text="{Binding SearchResultText}"></TextBox>
+    <ListBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" 
+              Items="{Binding SearchResultText}"
+              SelectionMode="Single"
+              Classes="NoSelected">
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <TextBox IsReadOnly="True" BorderThickness="0" Text="{Binding}"></TextBox>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
 
+        <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <VirtualizingStackPanel Orientation="Vertical"/>
+            </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+    </ListBox>
   </Grid>
 
 </Window>
