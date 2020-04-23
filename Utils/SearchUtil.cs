@@ -31,7 +31,7 @@ namespace LogSearchTool.Utils
         private static Regex rex = new Regex(@"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}", RegexOptions.Compiled);
 
         public static async Task SearchKeyWord(string keyWord, DirectoryInfo directoryInfo,
-            IList<string> filesToInclude, Action<IList<SearchResult>> resultCallback)
+            IList<string> filesToInclude, Action<IList<SearchResult>, bool> resultCallback)
         {
             await Task.Run(() =>
             {
@@ -62,7 +62,7 @@ namespace LogSearchTool.Utils
         }
 
         private static void Search(string keyWord, DirectoryInfo directoryInfo, IList<string> filesToInclude,
-            Action<IList<SearchResult>> resultCallback)
+            Action<IList<SearchResult>, bool> resultCallback)
         {
             Console.WriteLine($"{DateTime.Now} Enter Search");
             var filesList = directoryInfo?.EnumerateFiles().Where(fileInfo =>
@@ -150,9 +150,17 @@ namespace LogSearchTool.Utils
 
                 Console.WriteLine($"{DateTime.Now} Finish SearchResult Sort");
 
-                resultCallback.Invoke(searchResults);
-
                 index += count;
+
+                if (index < filesList.Count)
+                {
+                    resultCallback.Invoke(searchResults, false);
+                }
+                else
+                {
+                    resultCallback.Invoke(searchResults, true);
+                }
+
             }
 
             var directories = directoryInfo?.EnumerateDirectories().ToList();

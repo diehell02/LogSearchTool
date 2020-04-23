@@ -72,17 +72,29 @@ namespace LogSearchTool.Views
 
         public async void ExportButtonClick(object sender, RoutedEventArgs args)
         {
+            if (!viewModel.IsSearchCompleted)
+            {
+                await MessageBox.Show(this, "Please waitting for search complete", "Waitting", MessageBox.MessageBoxButtons.Ok);
+
+                return;
+            }
+
             var dialog = new SaveFileDialog();
             dialog.Filters.Add(new FileDialogFilter() { Name = "Log File", Extensions = { "log" } });
             dialog.InitialFileName = $"log_export_{DateTime.Now.Ticks}";
 
             var path = await dialog.ShowAsync(this);
 
-            using(var streamWriter = File.Create(path))
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            using (var streamWriter = File.Create(path))
             {
                 var searchResults = viewModel.SearchResults;
 
-                foreach(var searchResult in searchResults)
+                foreach (var searchResult in searchResults)
                 {
                     searchResult.Content.ForEach(result =>
                     {

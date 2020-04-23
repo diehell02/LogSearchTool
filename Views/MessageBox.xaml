@@ -5,9 +5,10 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="LogSearchTool.Views.MessageBox" SizeToContent="WidthAndHeight" CanResize="False" 
         MinWidth="200" MinHeight="100"
-        WindowStartupLocation="CenterOwner">
+        MaxWidth="400" MaxHeight="200"
+        WindowStartupLocation="CenterScreen">
   <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-    <TextBlock HorizontalAlignment="Center" Name="Text"/>
+    <TextBlock HorizontalAlignment="Center" Name="Text" FontSize="16" Margin="5"/>
     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
       <StackPanel.Styles>
         <Style Selector="Button">

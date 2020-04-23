@@ -57,11 +57,17 @@ namespace LogSearchTool.ViewModels
             set;
         }
 
+        public bool IsSearchCompleted
+        {
+            get;
+            private set;
+        }
+
         public MainWindowViewModel()
         {
             IncludeFiles = new AvaloniaList<string>()
             {
-                "action.log", "main.log", "network.log", "rcv.log", "rcv_media_stats.log", "webrtc.log", "websocket.log"
+                "", "action.log", "main.log", "network.log", "rcv.log", "rcv_media_stats.log", "webrtc.log", "websocket.log"
             };
             searchResultText = new AvaloniaList<StringBuilder>();
             SearchResults = new List<SearchUtil.SearchResult>();
@@ -85,22 +91,24 @@ namespace LogSearchTool.ViewModels
             }
 
             await SearchUtil.SearchKeyWord(SearchText, new DirectoryInfo(LogFilePath),
-                filesToInclude, results =>
+                filesToInclude, (results, isCompleted) =>
                 {
                     Console.WriteLine($"{DateTime.Now} search result return");
 
                     SearchResults.AddRange(results);
 
-                    foreach (var result in results)
+                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                        IsSearchCompleted = isCompleted;
+
+                        foreach (var result in results)
                         {
                             SearchResultText.Add(new StringBuilder(result.FileInfo.Name));
                             SearchResultText.Add(new StringBuilder("----------------------------------------------------------"));
 
                             SearchResultText.AddRange(result.Content);
-                        });
-                    }
+                        }
+                    });
 
                     Console.WriteLine($"{DateTime.Now} search result finish");
                 });

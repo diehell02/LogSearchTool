@@ -31,7 +31,7 @@ namespace LogSearchTool.Views
             AvaloniaXamlLoader.Load(this);
         }
 
-        public static Task<MessageBoxResult> Show(Window parent, string text, string title, 
+        public static Task<MessageBoxResult> Show(Window parent, string text, string title,
             MessageBoxButtons buttons, Action action = null)
         {
             var msgbox = new MessageBox()
@@ -45,8 +45,9 @@ namespace LogSearchTool.Views
 
             void AddButton(string caption, MessageBoxResult r, bool def = false)
             {
-                var btn = new Button { Content = caption };
-                btn.Click += (_, __) => {
+                var btn = new Button { Content = caption, Width = 80, Height = 30 };
+                btn.Click += (_, __) =>
+                {
                     res = r;
                     msgbox.Close();
                 };
