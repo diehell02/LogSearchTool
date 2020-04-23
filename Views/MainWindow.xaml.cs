@@ -5,6 +5,10 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using LogSearchTool.Utils;
 using LogSearchTool.ViewModels;
+using SharpDX.Direct3D11;
+using SharpDX.Text;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +36,7 @@ namespace LogSearchTool.Views
 #if DEBUG
             this.AttachDevTools();
 #endif
+
         }
 
         private void InitializeComponent()
@@ -62,6 +67,28 @@ namespace LogSearchTool.Views
                 {
                     FileUtil.Extra(new DirectoryInfo(logFilePath));
                 });
+            }
+        }
+
+        public async void ExportButtonClick(object sender, RoutedEventArgs args)
+        {
+            var dialog = new SaveFileDialog();
+            dialog.Filters.Add(new FileDialogFilter() { Name = "Log File", Extensions = { "log" } });
+            dialog.InitialFileName = $"log_export_{DateTime.Now.Ticks}";
+
+            var path = await dialog.ShowAsync(this);
+
+            using(var streamWriter = File.Create(path))
+            {
+                var searchResults = viewModel.SearchResults;
+
+                foreach(var searchResult in searchResults)
+                {
+                    searchResult.Content.ForEach(result =>
+                    {
+                        streamWriter.Write(System.Text.Encoding.UTF8.GetBytes(result.ToString() + Environment.NewLine));
+                    });
+                }
             }
         }
     }

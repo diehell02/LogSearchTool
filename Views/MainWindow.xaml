@@ -26,6 +26,9 @@
     <Style Selector="Grid.GridItem">
       <Setter Property="Margin" Value="2"></Setter>
     </Style>
+    <Style Selector="ComboBox.GridItem">
+      <Setter Property="Margin" Value="2"></Setter>
+    </Style>
   </Window.Styles>
 
   <Grid Margin="25">
@@ -68,15 +71,18 @@
     <TextBlock Grid.Row="2" Grid.Column="0"
                Classes="GridItem"
                Text="Files to include"></TextBlock>
-    <TextBox Grid.Row="2" Grid.Column="1"
-              Classes="GridItem"
-             Text="{Binding FilesToInclude}"></TextBox>
-    <TextBlock Grid.Row="2" Grid.Column="2"
-               Classes="GridItem"
-               Text="Files to exclude"></TextBlock>
-    <TextBox Grid.Row="2" Grid.Column="3"
-              Classes="GridItem"
-             Text="{Binding FilesToExclude}"></TextBox>
+    <ComboBox x:Name="FileFilterComboBox"
+              Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+              Classes="GridItem" Items="{Binding IncludeFiles}" SelectedItem="{Binding IncludeFileName}">
+      <ComboBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding}"/>
+        </DataTemplate>
+      </ComboBox.ItemTemplate>
+    </ComboBox>
+    <Button Grid.Row="2" Grid.Column="3"
+            Classes="GridItem"
+            Content="Export" Click="ExportButtonClick"></Button>
 
     <ListBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" 
               Items="{Binding SearchResultText}"

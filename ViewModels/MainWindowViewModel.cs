@@ -8,37 +8,12 @@ using System.ComponentModel;
 using System.Text;
 using System.IO;
 using Avalonia.Collections;
+using DynamicData;
 
 namespace LogSearchTool.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase, INotifyPropertyChanged
     {
-        private List<string> filesToIncludeList
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(FilesToInclude))
-                {
-                    return new List<string>();
-                }
-
-                return new List<string>(FilesToInclude.Split(','));
-            }
-        }
-
-        private List<string> filesToExcludeList
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(FilesToExclude))
-                {
-                    return new List<string>();
-                }
-
-                return new List<string>(FilesToExclude.Split(','));
-            }
-        }
-
         private string logFilePath;
         private AvaloniaList<StringBuilder> searchResultText;
 
@@ -64,13 +39,19 @@ namespace LogSearchTool.ViewModels
             }
         }
 
-        public string FilesToInclude
+        public IList<SearchUtil.SearchResult> SearchResults
         {
             get;
-            set;
+            private set;
         }
 
-        public string FilesToExclude
+        public AvaloniaList<string> IncludeFiles
+        {
+            get;
+            private set;
+        }
+
+        public string IncludeFileName
         {
             get;
             set;
@@ -78,8 +59,12 @@ namespace LogSearchTool.ViewModels
 
         public MainWindowViewModel()
         {
-            FilesToInclude = ".log";
+            IncludeFiles = new AvaloniaList<string>()
+            {
+                "action.log", "main.log", "network.log", "rcv.log", "rcv_media_stats.log", "webrtc.log", "websocket.log"
+            };
             searchResultText = new AvaloniaList<StringBuilder>();
+            SearchResults = new List<SearchUtil.SearchResult>();
         }
 
         public async void SearchButtonClick()
@@ -90,11 +75,22 @@ namespace LogSearchTool.ViewModels
             }
 
             SearchResultText.Clear();
+            SearchResults.Clear();
+
+            var filesToInclude = new List<string>();
+
+            if (!string.IsNullOrEmpty(IncludeFileName))
+            {
+                filesToInclude.Add(IncludeFileName);
+            }
 
             await SearchUtil.SearchKeyWord(SearchText, new DirectoryInfo(LogFilePath),
-                filesToIncludeList, filesToExcludeList, results =>
+                filesToInclude, results =>
                 {
                     Console.WriteLine($"{DateTime.Now} search result return");
+
+                    SearchResults.AddRange(results);
+
                     foreach (var result in results)
                     {
                         Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>

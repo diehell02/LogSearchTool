@@ -31,7 +31,7 @@ namespace LogSearchTool.Utils
         private static Regex rex = new Regex(@"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}", RegexOptions.Compiled);
 
         public static async Task SearchKeyWord(string keyWord, DirectoryInfo directoryInfo,
-            List<string> filesToInclude, List<string> filesToExclude, Action<IList<SearchResult>> resultCallback)
+            IList<string> filesToInclude, Action<IList<SearchResult>> resultCallback)
         {
             await Task.Run(() =>
             {
@@ -41,7 +41,7 @@ namespace LogSearchTool.Utils
 
                 stopwatch.Start();
 
-                Search(keyWord, directoryInfo, filesToInclude, filesToExclude, resultCallback);
+                Search(keyWord, directoryInfo, filesToInclude, resultCallback);
 
                 stopwatch.Stop();
 
@@ -61,29 +61,26 @@ namespace LogSearchTool.Utils
             return true;
         }
 
-        private static void Search(string keyWord, DirectoryInfo directoryInfo, List<string> filesToInclude,
-            List<string> filesToExclude, Action<IList<SearchResult>> resultCallback)
+        private static void Search(string keyWord, DirectoryInfo directoryInfo, IList<string> filesToInclude,
+            Action<IList<SearchResult>> resultCallback)
         {
             Console.WriteLine($"{DateTime.Now} Enter Search");
             var filesList = directoryInfo?.EnumerateFiles().Where(fileInfo =>
             {
-                foreach (var fileExtension in filesToInclude)
+                if (filesToInclude.Count == 0)
                 {
-                    if (fileInfo.Extension != fileExtension)
+                    return true;
+                }
+
+                foreach (var includeFile in filesToInclude)
+                {
+                    if (fileInfo.Name.EndsWith(includeFile))
                     {
-                        return false;
+                        return true;
                     }
                 }
 
-                foreach (var fileExtension in filesToExclude)
-                {
-                    if (fileInfo.Extension == fileExtension)
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
+                return false;
             }).ToList();
             Console.WriteLine($"{DateTime.Now} Finish Filter");
             var resultLock = new object();
@@ -162,7 +159,7 @@ namespace LogSearchTool.Utils
 
             foreach (var directory in directories)
             {
-                Search(keyWord, directory, filesToInclude, filesToExclude, resultCallback);
+                Search(keyWord, directory, filesToInclude, resultCallback);
             }
         }
     }
