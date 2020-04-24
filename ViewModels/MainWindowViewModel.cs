@@ -57,6 +57,12 @@ namespace LogSearchTool.ViewModels
             set;
         }
 
+        public int SelectedIncludeFileIndex
+        {
+            get;
+            set;
+        }
+
         public bool IsSearchCompleted
         {
             get;
@@ -69,6 +75,7 @@ namespace LogSearchTool.ViewModels
             {
                 "", "action.log", "main.log", "network.log", "rcv.log", "rcv_media_stats.log", "webrtc.log", "websocket.log"
             };
+            SelectedIncludeFileIndex = 2;
             searchResultText = new AvaloniaList<StringBuilder>();
             SearchResults = new List<SearchUtil.SearchResult>();
         }

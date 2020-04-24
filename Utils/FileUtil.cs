@@ -24,11 +24,13 @@ namespace LogSearchTool.Utils
 
         private static void Extra(FileInfo fileInfo)
         {
-            if (fileInfo.FullName.EndsWith(".log.zip"))
+            var fileTypes = MimeTypeUtil.GetMimeType(fileInfo.FullName);
+
+            if (fileTypes.Contains("gz"))
             {
                 UnZipFile.GzipDecompress(fileInfo);
             }
-            else if (fileInfo.Extension == ".zip")
+            else if (fileTypes.Contains("zip"))
             {
                 UnZipFile.UnZip(fileInfo);
             }
