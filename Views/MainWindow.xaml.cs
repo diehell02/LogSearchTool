@@ -50,25 +50,41 @@ namespace LogSearchTool.Views
 
             var result = await dialog.ShowAsync(this);
 
-            if (!string.IsNullOrEmpty(result) && viewModel != null)
+            if (string.IsNullOrEmpty(result))
             {
-                viewModel.LogFilePath = result;
+                return;
             }
-        }
 
-        public void ExtraButtonClick(object sender, RoutedEventArgs args)
-        {
-            string logFilePath = viewModel.LogFilePath;
-
-            if (!string.IsNullOrEmpty(logFilePath))
+            await MessageBox.Show(this, "Waitting for Decompress", "Decompress", MessageBox.MessageBoxButtons.None,
+            () =>
             {
-                MessageBox.Show(this, "Waitting for Extra", "Extra", MessageBox.MessageBoxButtons.None,
-                () =>
+                var decompressDirectory = FileUtil.CreateDecompressDirectory(new DirectoryInfo(result));
+
+                FileUtil.Decompress(decompressDirectory);
+
+                Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    FileUtil.Extra(new DirectoryInfo(logFilePath));
+                    if (viewModel != null)
+                    {
+                        viewModel.LogFilePath = decompressDirectory.FullName;
+                    }
                 });
-            }
+            });
         }
+
+        // public void DecompressButtonClick(object sender, RoutedEventArgs args)
+        // {
+        //     string logFilePath = viewModel.LogFilePath;
+
+        //     if (!string.IsNullOrEmpty(logFilePath))
+        //     {
+        //         MessageBox.Show(this, "Waitting for Extra", "Extra", MessageBox.MessageBoxButtons.None,
+        //         () =>
+        //         {
+        //             FileUtil.Decompress(new DirectoryInfo(logFilePath));
+        //         });
+        //     }
+        // }
 
         public async void ExportButtonClick(object sender, RoutedEventArgs args)
         {
@@ -96,6 +112,8 @@ namespace LogSearchTool.Views
 
                 foreach (var searchResult in searchResults)
                 {
+                    streamWriter.Write(System.Text.Encoding.UTF8.GetBytes(searchResult.FileInfo.FullName + Environment.NewLine));
+                    streamWriter.Write(System.Text.Encoding.UTF8.GetBytes("----------------------------------------------------------" + Environment.NewLine));
                     searchResult.Content.ForEach(result =>
                     {
                         streamWriter.Write(System.Text.Encoding.UTF8.GetBytes(result.ToString() + Environment.NewLine));
