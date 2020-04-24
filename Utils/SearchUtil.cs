@@ -28,7 +28,7 @@ namespace LogSearchTool.Utils
             }
         }
 
-        private static Regex rex = new Regex(@"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}", RegexOptions.Compiled);
+        private static Regex rex = new Regex(@"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3})$", RegexOptions.Compiled);
 
         public static async Task SearchKeyWord(string keyWord, DirectoryInfo directoryInfo,
             IList<string> filesToInclude, Action<IList<SearchResult>, bool> resultCallback)
@@ -51,14 +51,16 @@ namespace LogSearchTool.Utils
 
         private static bool IsLogLineStart(string line, Regex rex)
         {
-            var match = rex.Match(line.Substring(0, 18));
+            var match = rex.Match(line.Substring(0, Math.Min(line.Length, 23)));
 
             if (match.Success)
             {
+                return true;
+            }
+            else
+            {
                 return false;
             }
-
-            return true;
         }
 
         private static void Search(string keyWord, DirectoryInfo directoryInfo, IList<string> filesToInclude,
@@ -97,7 +99,7 @@ namespace LogSearchTool.Utils
             while (index < filesList.Count)
             {
                 var dealCount = filesList.Count - index;
-                var count = dealCount < maxParallelFilesNumber ? dealCount : maxParallelFilesNumber;
+                var count = Math.Min(dealCount, maxParallelFilesNumber);
                 var dealFilesList = filesList.GetRange(index, count);
                 var searchResults = new List<SearchResult>();
 
