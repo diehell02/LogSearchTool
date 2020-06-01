@@ -114,7 +114,7 @@ namespace LogSearchTool.Utils
                             FileInfo = fileInfo,
                         };
 
-                        while (!string.IsNullOrEmpty(s = sr.ReadLine()))
+                        while ((s = sr.ReadLine()) != null)
                         {
                             if (lastLineFoundFlag)
                             {

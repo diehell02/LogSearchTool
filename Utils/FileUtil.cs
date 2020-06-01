@@ -29,13 +29,13 @@ namespace LogSearchTool.Utils
             if (fileTypes.Contains("gz"))
             {
                 UnZipFile.GzipDecompress(fileInfo);
+                DeleteFile(fileInfo);
             }
             else if (fileTypes.Contains("zip"))
             {
                 UnZipFile.UnZip(fileInfo);
+                DeleteFile(fileInfo);
             }
-
-            DeleteFile(fileInfo);
         }
 
         public static DirectoryInfo CreateDecompressDirectory(DirectoryInfo directoryInfo)
