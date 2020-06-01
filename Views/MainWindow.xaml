@@ -48,15 +48,12 @@
     <TextBlock Grid.Row="0" Grid.Column="0"
                Classes="GridItem"
                Text="LogFile"></TextBlock>
-    <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumSpan="2"
+    <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
               Classes="GridItem"
              Text="{Binding LogFilePath}"></TextBox>
     <Button Grid.Row="0" Grid.Column="3"
             Classes="GridItem"
             Content="Import" Click="ImportButtonClick"></Button>
-    <!-- <Button Grid.Row="0" Grid.Column="4"
-            Classes="GridItem"
-            Content="Decompress" Click="DecompressButtonClick"></Button> -->
 
     <TextBlock Grid.Row="1" Grid.Column="0"
                Classes="GridItem"
